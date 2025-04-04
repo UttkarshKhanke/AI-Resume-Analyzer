@@ -13,15 +13,12 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 # Create the resumes folder if it doesn't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# In-memory history list to store recent resume analyses
-history = []
-
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
         job_role = request.form["job_role"]
 
-        # Initialize session keys
+        # Initialize session keys if not already set
         if "resume_path" not in session:
             session["resume_path"] = None
             session["resume_name"] = None
@@ -41,9 +38,7 @@ def index():
 
         # Extract text and skills from resume
         resume_text = extract_text(session["resume_path"])
-        print("Extracted Resume Text:\n", resume_text[:1000])  # Debugging
         extracted_skills = extract_skills(resume_text)
-        print("Extracted Skills:", extracted_skills)  # Debugging
 
         # Load job description
         job_desc = get_job_description(f"jobs/{job_role}.json")
@@ -59,14 +54,22 @@ def index():
         matched_skills = list(set(extracted_skills) & set(job_keywords))
         missing_skills = list(set(job_keywords) - set(extracted_skills))
 
-        # Update history (limit to last 5 entries)
-        history.append({
+        # Use session-based history for privacy
+        if "history" not in session:
+            session["history"] = []
+
+        user_history = session["history"]
+
+        user_history.append({
             "filename": session["resume_name"],
             "job_role": job_role.replace("_", " ").title(),
             "match_score": match_score,
             "skills_found": len(matched_skills),
         })
-        history[:] = history[-5:]
+
+        # Keep only last 5 entries
+        user_history = user_history[-5:]
+        session["history"] = user_history
 
         return render_template(
             "index.html",
@@ -75,12 +78,18 @@ def index():
             matched_count=len(matched_skills),
             missing_count=len(missing_skills),
             suggestions=missing_skills,
-            history=history,
+            history=session.get("history", []),
             selected_role=job_role,
         )
 
     # GET request
-    return render_template("index.html", skills=None, score=None, history=history, selected_role=None)
+    return render_template(
+        "index.html",
+        skills=None,
+        score=None,
+        history=session.get("history", []),
+        selected_role=None
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)

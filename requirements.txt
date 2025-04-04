@@ -1,4 +1,3 @@
 Flask
-spacy
-pdfminer.six
-scikit-learn
+flask_sqlalchemy
+PyPDF2

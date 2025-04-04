@@ -32,7 +32,6 @@
             <h3>Job Match Score: {{ score }}%</h3>
 
             <canvas id="skillChart" width="400" height="200"></canvas>
-
             <script>
                 const ctx = document.getElementById('skillChart');
                 const chart = new Chart(ctx, {
@@ -42,8 +41,7 @@
                         datasets: [{
                             label: 'Skill Comparison',
                             data: [{{ matched_count }}, {{ missing_count }}],
-                            backgroundColor: ['#4CAF50', '#F44336'],
-                            borderWidth: 1
+                            backgroundColor: ['#4CAF50', '#F44336']
                         }]
                     }
                 });

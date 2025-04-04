@@ -1,20 +1,17 @@
-import os
-import spacy
-from pdfminer.high_level import extract_text
-
-nlp = spacy.load("en_core_web_sm")
+import PyPDF2
+import re
 
 def extract_text_from_pdf(file_path):
-    return extract_text(file_path)
+    text = ""
+    with open(file_path, "rb") as file:
+        reader = PyPDF2.PdfReader(file)
+        for page in reader.pages:
+            text += page.extract_text()
+    return text.lower()
 
 def extract_skills(text):
-    doc = nlp(text)
-    skills = []
-    skill_keywords = ["python", "java", "sql", "excel", "machine learning",
-                      "deep learning", "data analysis", "pandas", "numpy", "html", "css", "javascript"]
-    
-    for token in doc:
-        if token.text.lower() in skill_keywords:
-            skills.append(token.text.lower())
-    
-    return list(set(skills))
+    keywords = ["python", "sql", "excel", "pandas", "numpy", "machine learning", "data analysis",
+                "deep learning", "statistics", "html", "css", "javascript", "react", "node.js",
+                "git", "power bi", "data visualization", "reporting"]
+    found = [kw for kw in keywords if re.search(r'\b' + re.escape(kw) + r'\b', text)]
+    return found

@@ -1,3 +1,8 @@
 {
-  "description": "We are looking for a Data Scientist with skills in Python, SQL, Machine Learning, Pandas, NumPy, and Deep Learning."
+  "title": "Data Scientist",
+  "skills": [
+    "Python", "R", "Statistics", "Machine Learning",
+    "Data Visualization", "Pandas", "Numpy", "Matplotlib",
+    "Scikit-learn", "Deep Learning", "SQL", "Data Cleaning"
+  ]
 }

@@ -1,3 +1,8 @@
 {
-  "description": "Hiring Data Analyst with skills in Excel, SQL, Power BI, Python, and Data Cleaning."
+  "title": "Data Analyst",
+  "skills": [
+    "Excel", "SQL", "Python", "R", "Power BI",
+    "Tableau", "Data Cleaning", "Data Visualization",
+    "Statistics", "Business Intelligence", "Communication Skills"
+  ]
 }

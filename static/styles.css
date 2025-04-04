@@ -1,21 +1,258 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    padding: 20px;
-}
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
-.container {
-    max-width: 700px;
-    margin: auto;
-    background: white;
-    padding: 30px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
+    background-image: url("bg-apra.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
 
-input, select, button {
-    display: block;
-    width: 100%;
-    margin: 15px 0;
-    padding: 10px;
+    color: #fff;
+    min-height: 100vh;
+}
+/* General Button Styles */
+button {
+    background: linear-gradient(45deg, #00ffd5, #667eea);
+    color: white;
     font-size: 16px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Hover Effect */
+button:hover {
+    background: linear-gradient(45deg, #667eea, #00ffd5);
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Active (Click) Effect */
+button:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Disabled Button */
+button:disabled {
+    background: #888;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* General Styles for Select and File Input */
+select, input[type="file"] {
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    background: linear-gradient(45deg, #292945, #3f3f5e);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+    appearance: none; /* Removes default browser styling */
+}
+
+/* Ensure dropdown menu items are visible */
+select {
+    background-color: #3f3f5e; /* Dark background for better visibility */
+    color: #ffffff; /* White text */
+    padding-right: 40px;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23ffffff" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M6 8l4 4 4-4"></path></svg>'); 
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px;
+}
+
+/* Dropdown options */
+select option {
+    background-color: #3f3f5e; /* Dark background for dropdown */
+    color: #ffffff; /* White text */
+}
+
+/* Hover Effect */
+select:hover, input[type="file"]:hover {
+    background: linear-gradient(45deg, #3f3f5e, #5e5e7a);
+    transform: scale(1.02);
+}
+
+/* Active State */
+select:focus, input[type="file"]:focus {
+    outline: 2px solid #00ffd5;
+    box-shadow: 0 0 10px rgba(0, 255, 213, 0.7);
+}
+
+
+
+/* File Input Styling */
+input[type="file"] {
+    position: relative;
+    cursor: pointer;
+}
+
+/* Custom File Input Button */
+input[type="file"]::-webkit-file-upload-button {
+    background: linear-gradient(45deg, #8800ff, #f3a024);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+    background: linear-gradient(45deg, #0824a4, #00ff95);
+    transform: scale(1.05);
+}
+
+/* Container */
+.container {
+    background: #1e1e2f;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Heading */
+.container h2 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 25px;
+    color: #ffffff;
+    animation: slideDown 1s ease-in-out;
+}
+
+/* Table Styling */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #1e1e2f;
+    color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    table-layout: fixed;
+    border: 1px solid #444;
+}
+
+th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #444;
+    word-wrap: break-word;
+}
+
+th {
+    background-color: #27293d;
+    color: #00ffd5;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    border-right: 1px solid #444;
+}
+
+/* Set fixed width for columns */
+th:nth-child(1), td:nth-child(1) {
+    width: 30%;
+}
+
+th:nth-child(2), td:nth-child(2) {
+    width: 25%;
+}
+
+th:nth-child(3), td:nth-child(3) {
+    width: 20%;
+}
+
+th:nth-child(4), td:nth-child(4) {
+    width: 15%;
+}
+
+td {
+    text-align: center;
+    vertical-align: middle;
+    font-size: 16px;
+    border-right: 1px solid #444;
+}
+
+td:last-child, th:last-child {
+    border-right: none;
+}
+
+/* Hover effect */
+tr:hover {
+    background-color: #2a2d44;
+}
+
+/* Lists */
+ul {
+    list-style-type: disc;
+    margin-left: 20px;
+    margin-top: 10px;
+    color: #e0e0e0;
+}
+
+/* Footer */
+.footer {
+    margin-top: 40px;
+    padding: 20px;
+    background: #121212;
+    color: #ccc;
+    text-align: center;
+    font-size: 14px;
+    border-top: 1px solid #333;
+    width: 100%;
+    animation: fadeIn 1.2s ease-in-out;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    th, td {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    table {
+        table-layout: auto;
+    }
+
+    th:nth-child(1), td:nth-child(1),
+    th:nth-child(2), td:nth-child(2),
+    th:nth-child(3), td:nth-child(3),
+    th:nth-child(4), td:nth-child(4) {
+        width: auto;
+    }
 }

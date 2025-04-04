@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Resume Analyzer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>AI-Powered Resume Analyzer</h2>
+        <form method="post" enctype="multipart/form-data">
+            <input type="file" name="resume" required>
+            <button type="submit">Upload & Analyze</button>
+        </form>
+
+        {% if skills %}
+            <h3>Extracted Skills:</h3>
+            <ul>
+                {% for skill in skills %}
+                    <li>{{ skill }}</li>
+                {% endfor %}
+            </ul>
+
+            <h3>Job Match Score: {{ score }}%</h3>
+        {% endif %}
+    </div>
+</body>
+</html>

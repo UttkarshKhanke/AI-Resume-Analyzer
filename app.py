@@ -7,19 +7,16 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 UPLOAD_FOLDER = 'resumes'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-# --- SQLite Configuration ---
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///analysis.db'
 db = SQLAlchemy(app)
 
-# --- Database Model ---
+# Create model
 class AnalysisHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(100))
     match_score = db.Column(db.Float)
     skills_found = db.Column(db.Text)
 
-# Create DB table (run only once)
 with app.app_context():
     db.create_all()
 
@@ -36,15 +33,11 @@ def index():
             resume_text = extract_text_from_pdf(filepath)
             skills = extract_skills(resume_text)
 
-            # Load appropriate job description
             job_desc = get_job_description(f"jobs/{job_role}.json")
-            job_keywords = ["python", "sql", "machine learning", "pandas", "numpy",
-                            "deep learning", "docker", "apis", "react", "html", "css",
-                            "javascript", "power bi", "excel", "data cleaning"]
+            job_keywords = job_desc["keywords"]
 
             match_score = calculate_match_score(resume_text, job_desc)
 
-            # Skill matching logic
             matched_skills = list(set(skills) & set(job_keywords))
             missing_skills = list(set(job_keywords) - set(skills))
 
@@ -57,7 +50,7 @@ def index():
             db.session.add(history)
             db.session.commit()
 
-            # Fetch recent history
+            # Recent records
             recent_history = AnalysisHistory.query.order_by(AnalysisHistory.id.desc()).limit(5).all()
 
             return render_template("index.html",
@@ -68,7 +61,7 @@ def index():
                                    suggestions=missing_skills,
                                    history=recent_history)
 
-    # GET method: show history
+    # GET method
     history = AnalysisHistory.query.order_by(AnalysisHistory.id.desc()).limit(5).all()
     return render_template("index.html", skills=None, score=None, history=history)
 

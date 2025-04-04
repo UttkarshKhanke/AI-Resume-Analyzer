@@ -3,11 +3,20 @@
 <head>
     <title>AI Resume Analyzer</title>
     <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
         <h2>AI-Powered Resume Analyzer</h2>
+
         <form method="post" enctype="multipart/form-data">
+            <label>Select Job Role:</label>
+            <select name="job_role" required>
+                <option value="data_scientist">Data Scientist</option>
+                <option value="web_developer">Web Developer</option>
+                <option value="data_analyst">Data Analyst</option>
+            </select>
+
             <input type="file" name="resume" required>
             <button type="submit">Upload & Analyze</button>
         </form>
@@ -21,6 +30,53 @@
             </ul>
 
             <h3>Job Match Score: {{ score }}%</h3>
+
+            <canvas id="skillChart" width="400" height="200"></canvas>
+
+            <script>
+                const ctx = document.getElementById('skillChart');
+                const chart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Matched Skills', 'Missing Skills'],
+                        datasets: [{
+                            label: 'Skill Comparison',
+                            data: [{{ matched_count }}, {{ missing_count }}],
+                            backgroundColor: ['#4CAF50', '#F44336'],
+                            borderWidth: 1
+                        }]
+                    }
+                });
+            </script>
+
+            <h3>Suggested Improvements:</h3>
+            <ul>
+                {% for item in suggestions %}
+                    <li>Consider adding: <strong>{{ item }}</strong></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if history %}
+            <h3>Recent Resume Analyses</h3>
+            <table border="1" cellpadding="5">
+                <thead>
+                    <tr>
+                        <th>Filename</th>
+                        <th>Match Score (%)</th>
+                        <th>Skills Found</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in history %}
+                        <tr>
+                            <td>{{ record.filename }}</td>
+                            <td>{{ record.match_score }}</td>
+                            <td>{{ record.skills_found }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         {% endif %}
     </div>
 </body>

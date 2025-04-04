@@ -1,69 +1,86 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 import os
-from resume_parser import extract_text_from_pdf, extract_skills
+from resume_parser import extract_text, extract_skills
 from job_matcher import get_job_description, calculate_match_score
-from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-UPLOAD_FOLDER = 'resumes'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///analysis.db'
-db = SQLAlchemy(app)
+app.secret_key = "your_secret_key"
 
-# Create model
-class AnalysisHistory(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(100))
-    match_score = db.Column(db.Float)
-    skills_found = db.Column(db.Text)
+# Folder to save uploaded resumes
+UPLOAD_FOLDER = "resumes"
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-with app.app_context():
-    db.create_all()
+# Create the resumes folder if it doesn't exist
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# In-memory history list to store recent resume analyses
+history = []
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
-        file = request.files["resume"]
-        job_role = request.form.get("job_role", "data_scientist")
+        job_role = request.form["job_role"]
 
-        if file:
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-            file.save(filepath)
+        # Initialize session keys
+        if "resume_path" not in session:
+            session["resume_path"] = None
+            session["resume_name"] = None
 
-            resume_text = extract_text_from_pdf(filepath)
-            skills = extract_skills(resume_text)
+        # Handle new file upload
+        if "resume" in request.files and request.files["resume"].filename:
+            file = request.files["resume"]
+            if file:
+                filepath = os.path.join(app.config["UPLOAD_FOLDER"], file.filename)
+                file.save(filepath)
+                session["resume_path"] = filepath
+                session["resume_name"] = file.filename
 
-            job_desc = get_job_description(f"jobs/{job_role}.json")
-            job_keywords = job_desc["keywords"]
+        # Ensure a resume is uploaded
+        if not session["resume_path"]:
+            return "Error: Please upload a resume first."
 
-            match_score = calculate_match_score(resume_text, job_desc)
+        # Extract text and skills from resume
+        resume_text = extract_text(session["resume_path"])
+        print("Extracted Resume Text:\n", resume_text[:1000])  # Debugging
+        extracted_skills = extract_skills(resume_text)
+        print("Extracted Skills:", extracted_skills)  # Debugging
 
-            matched_skills = list(set(skills) & set(job_keywords))
-            missing_skills = list(set(job_keywords) - set(skills))
+        # Load job description
+        job_desc = get_job_description(f"jobs/{job_role}.json")
+        if not job_desc:
+            return "Error: Job description file not found."
 
-            # Save to DB
-            history = AnalysisHistory(
-                filename=file.filename,
-                match_score=match_score,
-                skills_found=", ".join(skills)
-            )
-            db.session.add(history)
-            db.session.commit()
+        job_keywords = job_desc.get("keywords", [])
 
-            # Recent records
-            recent_history = AnalysisHistory.query.order_by(AnalysisHistory.id.desc()).limit(5).all()
+        # Calculate match score
+        match_score = calculate_match_score(resume_text, job_desc)
 
-            return render_template("index.html",
-                                   skills=skills,
-                                   score=match_score,
-                                   matched_count=len(matched_skills),
-                                   missing_count=len(missing_skills),
-                                   suggestions=missing_skills,
-                                   history=recent_history)
+        # Determine matched and missing skills
+        matched_skills = list(set(extracted_skills) & set(job_keywords))
+        missing_skills = list(set(job_keywords) - set(extracted_skills))
 
-    # GET method
-    history = AnalysisHistory.query.order_by(AnalysisHistory.id.desc()).limit(5).all()
-    return render_template("index.html", skills=None, score=None, history=history)
+        # Update history (limit to last 5 entries)
+        history.append({
+            "filename": session["resume_name"],
+            "job_role": job_role.replace("_", " ").title(),
+            "match_score": match_score,
+            "skills_found": len(matched_skills),
+        })
+        history[:] = history[-5:]
+
+        return render_template(
+            "index.html",
+            skills=extracted_skills,
+            score=match_score,
+            matched_count=len(matched_skills),
+            missing_count=len(missing_skills),
+            suggestions=missing_skills,
+            history=history,
+            selected_role=job_role,
+        )
+
+    # GET request
+    return render_template("index.html", skills=None, score=None, history=history, selected_role=None)
 
 if __name__ == "__main__":
     app.run(debug=True)

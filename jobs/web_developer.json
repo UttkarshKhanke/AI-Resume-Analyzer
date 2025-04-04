@@ -1,3 +1,14 @@
 {
-  "description": "Looking for Web Developer skilled in HTML, CSS, JavaScript, React, Node.js, and Express.js"
+  "title": "Web Developer",
+  "keywords": [
+    "HTML", "CSS", "JavaScript", "React", "Angular", "Vue.js",
+    "Node.js", "Express.js", "MongoDB", "SQL", "REST APIs",
+    "GraphQL", "Bootstrap", "Tailwind CSS", "Git", "Webpack",
+    "TypeScript", "jQuery", "AJAX", "Responsive Design",
+    "Cross-Browser Compatibility", "Web Performance Optimization",
+    "UI/UX Design", "Authentication", "OAuth", "JWT",
+    "Docker", "Kubernetes", "Microservices", "Testing",
+    "Jest", "Mocha", "CI/CD", "AWS", "Firebase",
+    "Progressive Web Apps (PWA)", "WebSockets"
+  ]
 }

@@ -4,6 +4,12 @@
     <title>AI Resume Analyzer</title>
     <link rel="stylesheet" href="/static/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        canvas#skillChart {
+            max-width: 300px;
+            max-height: 300px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -12,17 +18,24 @@
         <form method="post" enctype="multipart/form-data">
             <label>Select Job Role:</label>
             <select name="job_role" required>
-                <option value="software_developer">Software Developer</option>
-                <option value="data_scientist">Data Scientist</option>
-                <option value="full_stack_developer">Full Stack Developer</option>
-                <option value="devops_engineer">DevOps Engineer</option>
-                <option value="qa_engineer">QA Engineer</option>
-                <option value="cybersecurity_analyst">Cybersecurity Analyst</option>
-                <option value="data_analyst">Data Analyst</option>
+                <option value="software_developer" {% if selected_role == "software_developer" %}selected{% endif %}>Software Developer</option>
+                <option value="data_scientist" {% if selected_role == "data_scientist" %}selected{% endif %}>Data Scientist</option>
+                <option value="full_stack_developer" {% if selected_role == "full_stack_developer" %}selected{% endif %}>Full Stack Developer</option>
+                <option value="devops_engineer" {% if selected_role == "devops_engineer" %}selected{% endif %}>DevOps Engineer</option>
+                <option value="qa_engineer" {% if selected_role == "qa_engineer" %}selected{% endif %}>QA Engineer</option>
+                <option value="cybersecurity_analyst" {% if selected_role == "cybersecurity_analyst" %}selected{% endif %}>Cybersecurity Analyst</option>
+                <option value="data_analyst" {% if selected_role == "data_analyst" %}selected{% endif %}>Data Analyst</option>
             </select>
 
-            <input type="file" name="resume" required>
-            <button type="submit">Upload & Analyze</button>
+            {% if session.get("resume_path") %}
+                <p>Resume uploaded: <strong>{{ session.get("resume_name") }}</strong></p>
+                <label>You can re-upload to update:</label>
+                <input type="file" name="resume">
+            {% else %}
+                <input type="file" name="resume" required>
+            {% endif %}
+
+            <button type="submit">Analyze</button>
         </form>
 
         {% if skills %}
@@ -35,19 +48,24 @@
 
             <h3>Job Match Score: {{ score }}%</h3>
 
-            <canvas id="skillChart" width="400" height="200"></canvas>
+            <canvas id="skillChart"></canvas>
             <script>
-                const ctx = document.getElementById('skillChart');
-                const chart = new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: ['Matched Skills', 'Missing Skills'],
-                        datasets: [{
-                            label: 'Skill Comparison',
-                            data: [{{ matched_count }}, {{ missing_count }}],
-                            backgroundColor: ['#4CAF50', '#F44336']
-                        }]
-                    }
+                document.addEventListener("DOMContentLoaded", function() {
+                    const ctx = document.getElementById('skillChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: ['Matched Skills', 'Missing Skills'],
+                            datasets: [{
+                                data: [{{ matched_count }}, {{ missing_count }}],
+                                backgroundColor: ['#4CAF50', '#F44336']
+                            }]
+                        },
+                        options: {
+                            responsive: false,
+                            maintainAspectRatio: true
+                        }
+                    });
                 });
             </script>
 
@@ -61,10 +79,11 @@
 
         {% if history %}
             <h3>Recent Resume Analyses</h3>
-            <table border="1" cellpadding="5">
+            <table cellpadding="5">
                 <thead>
                     <tr>
                         <th>Filename</th>
+                        <th>Job Role</th>
                         <th>Match Score (%)</th>
                         <th>Skills Found</th>
                     </tr>
@@ -73,6 +92,7 @@
                     {% for record in history %}
                         <tr>
                             <td>{{ record.filename }}</td>
+                            <td>{{ record.job_role }}</td>
                             <td>{{ record.match_score }}</td>
                             <td>{{ record.skills_found }}</td>
                         </tr>

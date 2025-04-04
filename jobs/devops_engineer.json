@@ -1,6 +1,6 @@
 {
   "title": "DevOps Engineer",
-  "skills": [
+  "keywords": [
     "Linux", "Shell Scripting", "Docker", "Kubernetes",
     "CI/CD", "Jenkins", "AWS", "Azure", "Terraform",
     "Monitoring", "Ansible", "Git", "Networking"
